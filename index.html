@@ -1,0 +1,1849 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Math Adventure</title>
+  <style>
+    :root {
+      --ink: #2d347d;
+      --panel: #9eb7ff;
+      --panel-strong: #7f9fee;
+      --soft: #e9efff;
+      --lime: #baf43b;
+      --orange: #ffad4a;
+      --danger: #ef5d55;
+      --sky-a: #99d5e6;
+      --sky-b: #32aac2;
+      --ground: #dff7c7;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      overflow: hidden;
+      font-family: "Trebuchet MS", "Arial Rounded MT Bold", Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(#cfe9f8, #70b4db);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      color: var(--ink);
+      user-select: none;
+    }
+
+    .app {
+      position: relative;
+      width: 100vw;
+      height: 100dvh;
+      min-height: 520px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 8% 38%, rgba(255,255,255,.22) 0 4%, transparent 4.1%),
+        radial-gradient(circle at 35% 44%, rgba(26,172,189,.42) 0 8%, transparent 8.2%),
+        radial-gradient(circle at 65% 55%, rgba(42,178,157,.28) 0 9%, transparent 9.2%),
+        linear-gradient(180deg, var(--sky-a), var(--sky-b));
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .landing,
+    .level-select {
+      padding: clamp(18px, 4vw, 44px);
+    }
+
+    .level-select {
+      overflow: auto;
+    }
+
+    .landing-card,
+    .level-card {
+      position: relative;
+      width: min(72rem, 92vw);
+      min-height: min(720px, calc(100dvh - 48px));
+      margin: 0 auto;
+      border: clamp(8px, 1vw, 16px) solid #fff;
+      border-radius: 30px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: clamp(18px, 3vw, 34px);
+      padding: clamp(24px, 5vw, 58px);
+      text-align: center;
+      background:
+        radial-gradient(circle at 22% 28%, rgba(255,255,255,.34) 0 8%, transparent 8.2%),
+        radial-gradient(circle at 78% 18%, rgba(186,244,59,.36) 0 10%, transparent 10.3%),
+        linear-gradient(180deg, #adc0fb, var(--panel-strong));
+      box-shadow: 0 24px 64px rgba(22, 55, 103, .24);
+      overflow: hidden;
+    }
+
+    .landing-title {
+      margin: 0;
+      font-size: clamp(3.2rem, 9vw, 8rem);
+      line-height: .9;
+    }
+
+    .landing-subtitle {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(1.25rem, 3vw, 2.25rem);
+      font-weight: 900;
+    }
+
+    .big-play {
+      min-width: min(620px, 84vw);
+      min-height: clamp(78px, 11vw, 118px);
+      border: 10px solid #fff;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(#c8fb49, #91cf19);
+      box-shadow: 0 12px 0 rgba(255,255,255,.36), 0 18px 28px rgba(37, 76, 100, .18);
+      font-size: clamp(2rem, 5vw, 4.2rem);
+      font-weight: 900;
+    }
+
+    .title-friend {
+      width: min(260px, 44vw);
+      filter: drop-shadow(0 12px 18px rgba(34, 71, 92, .18));
+    }
+
+    .levels {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(14px, 2.4vw, 28px);
+    }
+
+    .hub-top {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .bank-box {
+      justify-self: end;
+      min-width: 170px;
+      min-height: 60px;
+      border: 7px solid #fff;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #fff;
+      background: linear-gradient(#83a9ff, #5b95f5);
+      font-size: clamp(1.35rem, 2.6vw, 2.4rem);
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(38, 77, 126, .16);
+    }
+
+    .hub-top .setup-title {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+    }
+
+    .shop {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .shop-item {
+      min-height: 154px;
+      border: 7px solid rgba(255,255,255,.82);
+      border-radius: 18px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px 14px;
+      align-items: center;
+      padding: 14px;
+      text-align: left;
+      background: rgba(233,239,255,.82);
+      box-shadow: inset 0 -5px 0 rgba(255,255,255,.34);
+    }
+
+    .shop-item.equipped {
+      background: linear-gradient(#c8fb49, #a6df21);
+    }
+
+    .shop-icon {
+      width: 64px;
+      aspect-ratio: 1;
+      border: 5px solid #fff;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(#ffbf59, #ff8f40);
+      font-size: 2rem;
+      font-weight: 900;
+    }
+
+    .shop-copy h3,
+    .shop-copy p {
+      margin: 0;
+      font-weight: 900;
+    }
+
+    .shop-copy h3 {
+      font-size: clamp(1.05rem, 1.7vw, 1.45rem);
+    }
+
+    .shop-copy p {
+      font-size: clamp(.82rem, 1.2vw, 1rem);
+    }
+
+    .shop-action {
+      grid-column: 1 / -1;
+      min-height: 42px;
+      border-radius: 999px;
+      color: var(--ink);
+      background: #dfe8ff;
+      font-size: clamp(.95rem, 1.5vw, 1.15rem);
+      font-weight: 900;
+    }
+
+    .shop-action.ready {
+      background: linear-gradient(#c8fb49, #a6df21);
+    }
+
+    .shop-action:disabled {
+      cursor: default;
+      opacity: .7;
+    }
+
+    .map-label {
+      margin: 0;
+      font-size: clamp(1.15rem, 2.3vw, 1.9rem);
+      font-weight: 900;
+      text-align: left;
+      justify-self: start;
+    }
+
+    .level-option {
+      min-height: 260px;
+      border: 8px solid rgba(255,255,255,.82);
+      border-radius: 18px;
+      display: grid;
+      align-content: center;
+      gap: 12px;
+      padding: 18px;
+      background: rgba(233,239,255,.78);
+      box-shadow: inset 0 -5px 0 rgba(255,255,255,.34);
+      transition: transform .14s ease, background .14s ease;
+    }
+
+    .level-option.selected {
+      background: linear-gradient(#c8fb49, #a6df21);
+    }
+
+    .level-option::before {
+      content: attr(data-step);
+      justify-self: center;
+      width: clamp(58px, 8vw, 86px);
+      aspect-ratio: 1;
+      border: 7px solid #fff;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(#ffbf59, #ff8f40);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900;
+      box-shadow: 0 8px 0 rgba(255,255,255,.28);
+    }
+
+    .level-option h2,
+    .level-option p {
+      margin: 0;
+      font-weight: 900;
+    }
+
+    .level-option h2 {
+      font-size: clamp(1.5rem, 3vw, 3rem);
+    }
+
+    .level-option p {
+      font-size: clamp(1rem, 1.8vw, 1.45rem);
+    }
+
+    .setup {
+      padding: clamp(14px, 2vw, 28px);
+      overflow: auto;
+    }
+
+    .setup-card {
+      position: relative;
+      width: min(92rem, 92vw);
+      min-height: min(760px, calc(100dvh - 32px));
+      margin: 0 auto;
+      border: clamp(8px, 1vw, 16px) solid #fff;
+      border-radius: 28px;
+      background: linear-gradient(180deg, #adc0fb, var(--panel-strong));
+      box-shadow: 0 24px 64px rgba(22, 55, 103, .22);
+      overflow: hidden;
+    }
+
+    .setup-title {
+      margin: 0;
+      padding: 18px 18px 22px;
+      text-align: center;
+      font-size: clamp(2.1rem, 5vw, 4.4rem);
+      line-height: 1;
+      background: rgba(232, 239, 255, .6);
+      border-bottom: 8px solid #fff;
+    }
+
+    .ops-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 8px solid #fff;
+    }
+
+    .op-column {
+      min-height: 405px;
+      padding: clamp(18px, 3vw, 36px) clamp(12px, 1.8vw, 28px);
+      text-align: center;
+    }
+
+    .op-column + .op-column {
+      border-left: 8px solid #fff;
+    }
+
+    .op-column h2 {
+      margin: 0 0 36px;
+      font-size: clamp(1.45rem, 3vw, 2.9rem);
+      line-height: 1.05;
+    }
+
+    .pill-stack {
+      display: grid;
+      gap: 22px;
+    }
+
+    .pill {
+      min-height: 54px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: #dfe8ff;
+      box-shadow: inset 0 -3px 0 rgba(255,255,255,.24);
+      font-size: clamp(1.28rem, 2.5vw, 2.45rem);
+      font-weight: 900;
+      line-height: 1;
+      transition: transform .12s ease, background .12s ease;
+    }
+
+    .pill.selected {
+      background: linear-gradient(#c8fb49, #a6df21);
+    }
+
+    .pill:active,
+    .round-button:active,
+    .answer:active {
+      transform: translateY(3px) scale(.99);
+    }
+
+    .setup-lower {
+      padding: 20px clamp(18px, 3vw, 44px) 88px;
+      text-align: center;
+    }
+
+    .setup-label {
+      margin: 0 0 18px;
+      font-size: clamp(1.35rem, 3vw, 2.55rem);
+      font-weight: 900;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(12px, 3vw, 54px);
+      max-width: 980px;
+      margin: 0 auto 26px;
+    }
+
+    .segmented.two {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 760px;
+      margin-bottom: 0;
+    }
+
+    .round-button {
+      position: absolute;
+      bottom: -30px;
+      width: clamp(126px, 16vw, 190px);
+      aspect-ratio: 1;
+      border: 14px solid #fff;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: clamp(2.3rem, 4vw, 4.2rem);
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(#84a9ff, #5792f4);
+      box-shadow: 0 14px 34px rgba(20,54,112,.18);
+    }
+
+    .round-button.start {
+      right: -18px;
+      color: #fff;
+      background: linear-gradient(#cbfb42, #9bd21b);
+    }
+
+    .round-button.back {
+      left: -18px;
+      font-size: clamp(4rem, 8vw, 7rem);
+      line-height: .7;
+    }
+
+    .game {
+      isolation: isolate;
+    }
+
+    .game-world {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        repeating-linear-gradient(73deg, transparent 0 72px, rgba(255,255,255,.42) 73px 78px, transparent 79px 126px),
+        linear-gradient(180deg, #96c4d1 0%, #4cb9ca 68%, #ebf6db 68%, #d5f0bb 80%, #f2e3d4 80%);
+    }
+
+    .cloud {
+      position: absolute;
+      border-radius: 999px;
+      opacity: .28;
+      background: #21aeba;
+    }
+
+    .cloud.one {
+      left: 20%;
+      top: 33%;
+      width: 250px;
+      height: 80px;
+    }
+
+    .cloud.two {
+      left: 55%;
+      top: 48%;
+      width: 310px;
+      height: 95px;
+    }
+
+    .mushroom {
+      position: absolute;
+      bottom: 28%;
+      width: min(26vw, 330px);
+      height: min(34vw, 420px);
+      opacity: .96;
+    }
+
+    .mushroom.left {
+      left: -44px;
+    }
+
+    .mushroom.right {
+      right: 9%;
+      transform: scale(.9);
+    }
+
+    .cap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 42%;
+      border: 6px solid rgba(104, 30, 31, .55);
+      border-radius: 52% 48% 45% 55% / 80% 75% 20% 20%;
+      background: radial-gradient(circle at 34% 28%, #fff4dc 0 9%, transparent 9.4%),
+        radial-gradient(circle at 72% 38%, rgba(255,255,255,.4) 0 7%, transparent 7.5%),
+        linear-gradient(120deg, #ff8f91, #ffc180 58%, #ff9b95);
+    }
+
+    .mushroom.right .cap {
+      background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.8) 0 8%, transparent 8.4%),
+        radial-gradient(circle at 66% 47%, rgba(255,255,255,.7) 0 10%, transparent 10.6%),
+        radial-gradient(circle at 82% 36%, rgba(255,255,255,.85) 0 4%, transparent 4.5%),
+        linear-gradient(125deg, #ff9294, #d9caff 58%, #647cff);
+    }
+
+    .stem {
+      position: absolute;
+      left: 40%;
+      top: 35%;
+      width: 22%;
+      height: 65%;
+      border-radius: 30px;
+      background: linear-gradient(90deg, #edaa74, #ffd0a3, #bf7a4e);
+    }
+
+    .bushes {
+      position: absolute;
+      left: -4%;
+      right: -4%;
+      bottom: 19%;
+      height: 17%;
+      background:
+        radial-gradient(circle at 5% 52%, #d7ffc5 0 6%, transparent 6.1%),
+        radial-gradient(circle at 13% 50%, #b5eb92 0 8%, transparent 8.1%),
+        radial-gradient(circle at 23% 54%, #d9ffc5 0 8%, transparent 8.1%),
+        radial-gradient(circle at 34% 48%, #abe987 0 9%, transparent 9.1%),
+        radial-gradient(circle at 45% 55%, #dcffc9 0 8%, transparent 8.1%),
+        radial-gradient(circle at 58% 48%, #afe889 0 9%, transparent 9.1%),
+        radial-gradient(circle at 70% 54%, #d7ffc5 0 8%, transparent 8.1%),
+        radial-gradient(circle at 83% 48%, #ade989 0 9%, transparent 9.1%),
+        radial-gradient(circle at 94% 55%, #d8ffc5 0 8%, transparent 8.1%),
+        linear-gradient(#dff7c7, #dff7c7);
+      filter: drop-shadow(0 8px 0 rgba(86, 156, 79, .18));
+    }
+
+    .dirt {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 21%;
+      background:
+        radial-gradient(ellipse at 8% 26%, rgba(177, 130, 82, .22) 0 2%, transparent 2.2%),
+        radial-gradient(ellipse at 24% 55%, rgba(177, 130, 82, .18) 0 3%, transparent 3.2%),
+        radial-gradient(ellipse at 45% 36%, rgba(177, 130, 82, .18) 0 2.5%, transparent 2.7%),
+        radial-gradient(ellipse at 70% 58%, rgba(177, 130, 82, .2) 0 3%, transparent 3.2%),
+        radial-gradient(ellipse at 91% 28%, rgba(177, 130, 82, .18) 0 2.6%, transparent 2.8%),
+        repeating-linear-gradient(90deg, rgba(189, 116, 64, .22) 0 16px, transparent 17px 120px),
+        linear-gradient(#f2e2cd, #e9d0b6);
+    }
+
+    .hud-button {
+      position: absolute;
+      z-index: 5;
+      top: clamp(16px, 4vw, 34px);
+      width: clamp(76px, 10vw, 120px);
+      aspect-ratio: 1;
+      border: 8px solid #fff;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(#83a9ff, #5b95f5);
+      box-shadow: 0 8px 18px rgba(38, 77, 126, .16);
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 900;
+    }
+
+    .pause {
+      left: clamp(16px, 3vw, 34px);
+    }
+
+    .coin-box {
+      position: absolute;
+      z-index: 5;
+      top: clamp(18px, 4vw, 34px);
+      right: clamp(18px, 3vw, 34px);
+      min-width: clamp(152px, 19vw, 230px);
+      height: clamp(66px, 8vw, 96px);
+      border: 8px solid #fff;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 14px;
+      padding: 0 22px;
+      color: #fff;
+      background: linear-gradient(#83a9ff, #5b95f5);
+      box-shadow: 0 8px 18px rgba(38, 77, 126, .16);
+      font-size: clamp(2.1rem, 4vw, 3.9rem);
+      font-weight: 900;
+    }
+
+    .timer-box {
+      position: absolute;
+      z-index: 5;
+      top: clamp(102px, 13vw, 142px);
+      right: clamp(18px, 3vw, 34px);
+      min-width: clamp(152px, 19vw, 230px);
+      height: clamp(54px, 6vw, 76px);
+      border: 7px solid #fff;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(#ffcc61, #ff9144);
+      box-shadow: 0 8px 18px rgba(38, 77, 126, .16);
+      font-size: clamp(1.55rem, 3vw, 2.7rem);
+      font-weight: 900;
+    }
+
+    .rescue-box {
+      position: absolute;
+      z-index: 5;
+      top: clamp(104px, 13vw, 144px);
+      left: clamp(18px, 3vw, 34px);
+      min-width: clamp(152px, 21vw, 260px);
+      height: clamp(52px, 6vw, 74px);
+      border: 7px solid #fff;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(#83a9ff, #5b95f5);
+      box-shadow: 0 8px 18px rgba(38, 77, 126, .16);
+      font-size: clamp(1.2rem, 2.5vw, 2.2rem);
+      font-weight: 900;
+    }
+
+    .coin {
+      width: clamp(42px, 5vw, 62px);
+      aspect-ratio: 1;
+      border: 5px solid #8b4a00;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 44% 45%, #ffd94f 0 31%, #f79a11 32% 52%, #c65e00 53% 58%, transparent 59%),
+        repeating-conic-gradient(from 0deg, #f6a21a 0 8deg, #803600 9deg 13deg);
+    }
+
+    .bank-box .coin,
+    .shop-icon .coin {
+      width: 34px;
+    }
+
+    .problem-card {
+      position: absolute;
+      z-index: 4;
+      top: clamp(30px, 4vw, 48px);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: min(56vw, 760px);
+      max-width: 76vw;
+      min-height: clamp(96px, 13vw, 170px);
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      padding: 16px 36px;
+      color: #49618d;
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 10px 20px rgba(44, 81, 109, .08);
+      font-size: clamp(3.6rem, 9vw, 8.2rem);
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .combat-lane {
+      position: absolute;
+      z-index: 3;
+      left: 0;
+      right: 0;
+      bottom: 23%;
+      height: 35%;
+    }
+
+    .hero,
+    .enemy {
+      position: absolute;
+      bottom: 0;
+      transform-origin: 50% 100%;
+      transition: left .55s ease, right .55s ease, transform .22s ease, filter .22s ease;
+    }
+
+    .hero {
+      left: clamp(42px, 8vw, 130px);
+      width: clamp(120px, 17vw, 210px);
+    }
+
+    .enemy {
+      right: var(--enemy-right, clamp(34px, 7vw, 110px));
+      width: clamp(140px, 19vw, 240px);
+    }
+
+    .hero.hit,
+    .enemy.hit {
+      filter: brightness(1.3) saturate(1.5);
+      transform: translateY(-8px) rotate(-2deg);
+    }
+
+    .enemy.attack {
+      transform: translateX(-32px) scale(1.05);
+    }
+
+    .blast {
+      position: absolute;
+      left: calc(clamp(42px, 8vw, 130px) + clamp(98px, 14vw, 174px));
+      right: calc(var(--enemy-right, clamp(34px, 7vw, 110px)) + clamp(94px, 13vw, 150px));
+      bottom: clamp(48px, 7vw, 88px);
+      height: 18px;
+      border-radius: 999px;
+      opacity: 0;
+      transform: scaleX(0);
+      transform-origin: left center;
+      background: linear-gradient(90deg, #99f4ff, #fff, #ff72bd);
+      box-shadow: 0 0 22px #fff, 0 0 34px #73ecff;
+      pointer-events: none;
+    }
+
+    .blast.fire {
+      animation: fire .42s ease;
+    }
+
+    .app[data-weapon="spark"] .blast {
+      background: linear-gradient(90deg, #fff36c, #fff, #ff7aca);
+      box-shadow: 0 0 24px #fff36c, 0 0 40px #ff7aca;
+    }
+
+    .app[data-weapon="rainbow"] .blast {
+      background: linear-gradient(90deg, #6ff7ff, #fff56f, #ff7aca, #8cff78);
+      box-shadow: 0 0 24px #fff, 0 0 44px #8cff78;
+    }
+
+    .app[data-accessory="goggles"] .hero {
+      filter: drop-shadow(0 0 12px rgba(134,240,255,.8));
+    }
+
+    .app[data-accessory="cape"] .hero {
+      filter: drop-shadow(0 0 12px rgba(255,118,181,.75));
+    }
+
+    @keyframes fire {
+      0% { opacity: 0; transform: scaleX(0); }
+      18% { opacity: 1; transform: scaleX(.3); }
+      70% { opacity: 1; transform: scaleX(1); }
+      100% { opacity: 0; transform: scaleX(1); }
+    }
+
+    .health {
+      position: absolute;
+      top: -14px;
+      right: 8px;
+      width: min(16vw, 210px);
+      height: 18px;
+      border: 5px solid #fff;
+      border-radius: 999px;
+      background: #ffebe9;
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(0,0,0,.12);
+    }
+
+    .health span {
+      display: block;
+      height: 100%;
+      width: var(--hp, 100%);
+      background: linear-gradient(90deg, #ff5d65, #ff884d);
+      transition: width .28s ease;
+    }
+
+    .friend {
+      position: absolute;
+      right: clamp(10px, 3vw, 46px);
+      bottom: clamp(138px, 17vw, 215px);
+      width: clamp(72px, 9vw, 120px);
+      z-index: 1;
+      transition: transform .35s ease, filter .35s ease;
+    }
+
+    .friend.saved {
+      filter: brightness(1.18) saturate(1.2);
+      transform: translateY(-26px) rotate(-8deg) scale(1.08);
+    }
+
+    .answers {
+      position: absolute;
+      z-index: 6;
+      left: 50%;
+      bottom: clamp(20px, 5vw, 46px);
+      width: min(84vw, 1040px);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(12px, 3vw, 54px);
+      transform: translateX(-50%);
+    }
+
+    .answer {
+      min-height: clamp(96px, 12vw, 145px);
+      border: 12px solid rgba(255,255,255,.8);
+      border-radius: 16px;
+      color: #fff;
+      background: linear-gradient(#ffc861, #ff9b3b);
+      box-shadow: 0 14px 0 rgba(255,255,255,.35), 0 18px 22px rgba(54, 91, 97, .12);
+      font-size: clamp(3.4rem, 7vw, 7.2rem);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .answer.correct {
+      background: linear-gradient(#c6fa4a, #83d629);
+    }
+
+    .answer.wrong {
+      background: linear-gradient(#ff8d8b, #ef574e);
+    }
+
+    .text-input-panel {
+      position: absolute;
+      z-index: 7;
+      left: 50%;
+      bottom: clamp(24px, 5vw, 52px);
+      width: min(84vw, 720px);
+      display: none;
+      gap: 14px;
+      transform: translateX(-50%);
+    }
+
+    .text-input-panel.active {
+      display: flex;
+    }
+
+    .text-input-panel input {
+      width: 100%;
+      min-height: clamp(78px, 9vw, 112px);
+      border: 8px solid rgba(255,255,255,.8);
+      border-radius: 16px;
+      padding: 8px 24px;
+      text-align: center;
+      color: var(--ink);
+      font-size: clamp(2.6rem, 6vw, 5.4rem);
+      font-weight: 900;
+      outline: 0;
+      background: rgba(255,255,255,.95);
+    }
+
+    .text-input-panel button {
+      min-width: clamp(106px, 16vw, 160px);
+      border: 8px solid rgba(255,255,255,.8);
+      border-radius: 16px;
+      color: #fff;
+      background: linear-gradient(#c6fa4a, #83d629);
+      font-size: clamp(1.5rem, 3.4vw, 3rem);
+      font-weight: 900;
+    }
+
+    .modal {
+      position: absolute;
+      z-index: 20;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(64, 92, 139, .42);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal.active {
+      display: grid;
+    }
+
+    .modal-card {
+      width: min(92vw, 560px);
+      border: 10px solid #fff;
+      border-radius: 24px;
+      padding: 30px;
+      text-align: center;
+      background: linear-gradient(#b7c8ff, #7fa0f3);
+      box-shadow: 0 22px 48px rgba(32, 46, 91, .28);
+    }
+
+    .modal-card h2 {
+      margin: 0 0 12px;
+      font-size: clamp(2.4rem, 7vw, 4.8rem);
+      line-height: 1;
+    }
+
+    .modal-card p {
+      margin: 0 0 24px;
+      font-size: clamp(1.2rem, 3.5vw, 2rem);
+      font-weight: 900;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .modal-actions .pill {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+    }
+
+    .character-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    @media (max-width: 860px) {
+      html,
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        min-height: 680px;
+      }
+
+      .setup-card {
+        min-height: auto;
+      }
+
+      .levels {
+        grid-template-columns: 1fr;
+      }
+
+      .hub-top,
+      .shop {
+        grid-template-columns: 1fr;
+      }
+
+      .bank-box {
+        justify-self: stretch;
+      }
+
+      .ops-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .op-column {
+        min-height: 300px;
+      }
+
+      .op-column:nth-child(3) {
+        border-left: 0;
+        border-top: 8px solid #fff;
+      }
+
+      .op-column:nth-child(4) {
+        border-top: 8px solid #fff;
+      }
+
+      .answers {
+        grid-template-columns: repeat(2, 1fr);
+        width: min(88vw, 600px);
+        gap: 16px;
+      }
+
+      .answer {
+        min-height: 86px;
+      }
+
+      .problem-card {
+        top: 150px;
+        max-width: 82vw;
+      }
+
+      .coin-box {
+        min-width: 132px;
+      }
+
+      .mushroom.right {
+        right: -4%;
+      }
+
+      .rescue-box,
+      .timer-box {
+        top: 96px;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .app {
+        min-height: 720px;
+      }
+
+      .setup {
+        overflow: auto;
+      }
+
+      .ops-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .op-column,
+      .op-column + .op-column,
+      .op-column:nth-child(3),
+      .op-column:nth-child(4) {
+        border-left: 0;
+        border-top: 8px solid #fff;
+      }
+
+      .op-column:first-child {
+        border-top: 0;
+      }
+
+      .round-button {
+        position: static;
+        width: 116px;
+        margin: 18px auto 0;
+      }
+
+      .round-button.back {
+        display: grid;
+      }
+
+      .setup-lower {
+        padding-bottom: 24px;
+      }
+
+      .segmented,
+      .segmented.two {
+        grid-template-columns: 1fr;
+      }
+
+      .combat-lane {
+        bottom: 27%;
+      }
+
+      .hero {
+        left: 18px;
+        width: 120px;
+      }
+
+      .enemy {
+        width: 138px;
+      }
+
+      .answers {
+        bottom: 22px;
+      }
+
+      .landing-card,
+      .level-card {
+        min-height: auto;
+      }
+
+      .rescue-box,
+      .timer-box {
+        top: 92px;
+        min-width: 118px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-live="polite">
+    <section class="screen landing active" id="landingScreen">
+      <div class="landing-card">
+        <svg class="title-friend" viewBox="0 0 170 150" role="img" aria-label="Friend waiting to be rescued">
+          <ellipse cx="85" cy="132" rx="58" ry="11" fill="rgba(53,81,87,.18)"/>
+          <path d="M43 99c-1-42 21-75 57-75 31 0 53 29 45 68-7 37-35 47-65 43-22-3-36-14-37-36Z" fill="#ffe46c" stroke="#7b5a16" stroke-width="6"/>
+          <circle cx="70" cy="72" r="13" fill="#fff"/>
+          <circle cx="108" cy="72" r="13" fill="#fff"/>
+          <circle cx="74" cy="74" r="6" fill="#1a2330"/>
+          <circle cx="104" cy="74" r="6" fill="#1a2330"/>
+          <path d="M75 103c16 11 31 11 44 0" fill="none" stroke="#7b5a16" stroke-width="6" stroke-linecap="round"/>
+          <path d="M56 37l-16-18M118 35l18-21" fill="none" stroke="#7b5a16" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="38" cy="18" r="11" fill="#ff76b5" stroke="#7b5a16" stroke-width="5"/>
+          <circle cx="139" cy="13" r="11" fill="#86f0ff" stroke="#7b5a16" stroke-width="5"/>
+        </svg>
+        <h1 class="landing-title">Math Rescue</h1>
+        <p class="landing-subtitle">Answer fast, push back the slime king, and save your friend before the minute runs out.</p>
+        <button class="big-play" id="landingStart" type="button">Start Game</button>
+      </div>
+    </section>
+
+    <section class="screen level-select" id="levelScreen">
+      <div class="level-card">
+        <div class="hub-top">
+          <h1 class="setup-title">Rescue Map</h1>
+          <div class="bank-box"><span class="coin" aria-hidden="true"></span><span id="bankCoins">0</span></div>
+        </div>
+        <p class="map-label">Choose a rescue path</p>
+        <div class="levels" id="levelButtons">
+          <button class="level-option selected" type="button" data-level="meadow" data-step="1">
+            <h2>Meadow Rescue</h2>
+            <p>Save Pip with 5 correct answers.</p>
+            <p>Gentle enemy steps.</p>
+          </button>
+          <button class="level-option" type="button" data-level="mushroom" data-step="2">
+            <h2>Mushroom Bridge</h2>
+            <p>Save Luma with 8 correct answers.</p>
+            <p>Wrong answers move the enemy faster.</p>
+          </button>
+          <button class="level-option" type="button" data-level="castle" data-step="3">
+            <h2>Crown Castle</h2>
+            <p>Save Bobo with 12 correct answers.</p>
+            <p>The enemy rushes hard.</p>
+          </button>
+        </div>
+        <p class="map-label">Merch shop</p>
+        <div class="shop" id="shopItems"></div>
+        <button class="round-button back" id="levelBack" type="button" aria-label="Back">‹</button>
+        <button class="round-button start" id="levelNext" type="button">OK</button>
+      </div>
+    </section>
+
+    <section class="screen setup" id="setupScreen">
+      <div class="setup-card">
+        <h1 class="setup-title">Math Operations</h1>
+        <div class="ops-grid" aria-label="Math operation settings">
+          <article class="op-column" data-op="add">
+            <h2>Addition</h2>
+            <div class="pill-stack">
+              <button class="pill" data-value="off">Off</button>
+              <button class="pill selected" data-value="10">1 - 10</button>
+              <button class="pill" data-value="20">1 - 20</button>
+              <button class="pill" data-value="100">1 - 100</button>
+              <button class="pill" data-value="1000">1 - 1000</button>
+            </div>
+          </article>
+          <article class="op-column" data-op="sub">
+            <h2>Subtraction</h2>
+            <div class="pill-stack">
+              <button class="pill" data-value="off">Off</button>
+              <button class="pill selected" data-value="10">1 - 10</button>
+              <button class="pill" data-value="20">1 - 20</button>
+              <button class="pill" data-value="100">1 - 100</button>
+              <button class="pill" data-value="1000">1 - 1000</button>
+            </div>
+          </article>
+          <article class="op-column" data-op="mul">
+            <h2>Multiplication</h2>
+            <div class="pill-stack">
+              <button class="pill selected" data-value="off">Off</button>
+              <button class="pill" data-value="10">x1 - x10</button>
+              <button class="pill" data-value="12">x1 - x12</button>
+              <button class="pill" data-value="custom">Custom</button>
+            </div>
+          </article>
+          <article class="op-column" data-op="div">
+            <h2>Division</h2>
+            <div class="pill-stack">
+              <button class="pill selected" data-value="off">Off</button>
+              <button class="pill" data-value="10">÷1 - ÷10</button>
+              <button class="pill" data-value="12">÷1 - ÷12</button>
+              <button class="pill" data-value="custom">Custom</button>
+            </div>
+          </article>
+        </div>
+        <div class="setup-lower">
+          <p class="setup-label">Difficulty: Slower pace, more time per problem</p>
+          <div class="segmented" id="difficultyButtons">
+            <button class="pill selected" data-difficulty="easy">Easy</button>
+            <button class="pill" data-difficulty="medium">Medium</button>
+            <button class="pill" data-difficulty="hard">Hard</button>
+          </div>
+          <p class="setup-label">Answers Mode</p>
+          <div class="segmented two" id="modeButtons">
+            <button class="pill selected" data-mode="choice">choice</button>
+            <button class="pill" data-mode="input">input</button>
+          </div>
+        </div>
+        <button class="round-button back" id="settingsBack" type="button" aria-label="Back">‹</button>
+        <button class="round-button start" id="startButton" type="button">OK</button>
+      </div>
+    </section>
+
+    <section class="screen game" id="gameScreen">
+      <div class="game-world">
+        <div class="cloud one"></div>
+        <div class="cloud two"></div>
+        <div class="mushroom left"><div class="cap"></div><div class="stem"></div></div>
+        <div class="mushroom right"><div class="cap"></div><div class="stem"></div></div>
+        <div class="bushes"></div>
+        <div class="dirt"></div>
+      </div>
+
+      <button class="hud-button pause" id="pauseButton" type="button" aria-label="Pause">Ⅱ</button>
+      <div class="coin-box"><span class="coin" aria-hidden="true"></span><span id="coinCount">0</span></div>
+      <div class="timer-box" id="timerText">1:00</div>
+      <div class="rescue-box" id="rescueText">Rescue 0/5</div>
+      <div class="problem-card" id="problemText">2 + 3 =</div>
+
+      <div class="combat-lane">
+        <div class="friend" id="friend">
+          <svg class="character-svg" viewBox="0 0 170 150" role="img" aria-label="Captured friend">
+            <ellipse cx="85" cy="132" rx="58" ry="11" fill="rgba(53,81,87,.18)"/>
+            <path d="M43 99c-1-42 21-75 57-75 31 0 53 29 45 68-7 37-35 47-65 43-22-3-36-14-37-36Z" fill="#ffe46c" stroke="#7b5a16" stroke-width="6"/>
+            <circle cx="70" cy="72" r="13" fill="#fff"/>
+            <circle cx="108" cy="72" r="13" fill="#fff"/>
+            <circle cx="74" cy="74" r="6" fill="#1a2330"/>
+            <circle cx="104" cy="74" r="6" fill="#1a2330"/>
+            <path d="M73 104c15-9 32-9 46 1" fill="none" stroke="#7b5a16" stroke-width="6" stroke-linecap="round"/>
+            <path d="M38 93h96" fill="none" stroke="#e05f5a" stroke-width="9" stroke-linecap="round"/>
+            <path d="M56 37l-16-18M118 35l18-21" fill="none" stroke="#7b5a16" stroke-width="7" stroke-linecap="round"/>
+            <circle cx="38" cy="18" r="11" fill="#ff76b5" stroke="#7b5a16" stroke-width="5"/>
+            <circle cx="139" cy="13" r="11" fill="#86f0ff" stroke="#7b5a16" stroke-width="5"/>
+          </svg>
+        </div>
+        <div class="hero" id="hero">
+          <svg class="character-svg" viewBox="0 0 180 190" role="img" aria-label="Math hero with a blaster">
+            <ellipse cx="82" cy="168" rx="38" ry="10" fill="rgba(53,81,87,.18)"/>
+            <circle cx="56" cy="50" r="30" fill="#dccdbb" stroke="#6f4939" stroke-width="5"/>
+            <circle cx="105" cy="50" r="30" fill="#dccdbb" stroke="#6f4939" stroke-width="5"/>
+            <circle cx="56" cy="50" r="18" fill="#ff9e91"/>
+            <circle cx="105" cy="50" r="18" fill="#ff9e91"/>
+            <rect x="44" y="50" width="78" height="88" rx="34" fill="#dbcbb6" stroke="#6f4939" stroke-width="5"/>
+            <circle cx="67" cy="83" r="17" fill="#fff"/>
+            <circle cx="101" cy="83" r="17" fill="#fff"/>
+            <circle cx="72" cy="84" r="9" fill="#241915"/>
+            <circle cx="96" cy="84" r="9" fill="#241915"/>
+            <ellipse cx="83" cy="101" rx="17" ry="22" fill="#2a1b18"/>
+            <path d="M63 34c13-12 32-12 46 0" fill="none" stroke="#7b4f3f" stroke-width="5" stroke-linecap="round"/>
+            <rect x="41" y="118" width="18" height="48" rx="8" fill="#5a3b35"/>
+            <rect x="107" y="118" width="18" height="48" rx="8" fill="#5a3b35"/>
+            <rect x="70" y="118" width="88" height="32" rx="15" fill="#56dff4" stroke="#81425a" stroke-width="6"/>
+            <rect x="151" y="125" width="26" height="18" rx="8" fill="#9fd4ff" stroke="#81425a" stroke-width="5"/>
+            <rect x="30" y="123" width="45" height="23" rx="10" fill="#ff69b3" stroke="#81425a" stroke-width="5"/>
+            <circle cx="49" cy="157" r="13" fill="#ffd24a" stroke="#81425a" stroke-width="4"/>
+          </svg>
+        </div>
+        <div class="enemy" id="enemy">
+          <div class="health" aria-label="Enemy health"><span id="healthFill"></span></div>
+          <svg class="character-svg" viewBox="0 0 210 190" role="img" aria-label="Silly slime enemy">
+            <ellipse cx="115" cy="172" rx="56" ry="12" fill="rgba(53,81,87,.18)"/>
+            <path d="M43 147C48 91 71 35 124 30c51-5 79 57 57 105-18 40-60 50-96 42-31-7-45-16-42-30Z" fill="#9df45e" stroke="#236a4e" stroke-width="6"/>
+            <path d="M67 144c26 23 73 25 100-1-12 29-76 43-100 1Z" fill="#27a987" opacity=".7"/>
+            <circle cx="99" cy="88" r="19" fill="#fff"/>
+            <circle cx="145" cy="86" r="18" fill="#fff"/>
+            <circle cx="93" cy="91" r="10" fill="#161b1d"/>
+            <circle cx="137" cy="89" r="10" fill="#161b1d"/>
+            <path d="M112 117c20-10 34-6 43 10" fill="none" stroke="#6c1c25" stroke-width="8" stroke-linecap="round"/>
+            <path d="M82 67c13-9 28-11 39-2M132 61c18-4 32 1 42 15" fill="none" stroke="#1b4035" stroke-width="8" stroke-linecap="round"/>
+            <path d="M74 28h105l-19 25-29-9-24 13-18-16-31 6Z" fill="#ffc928" stroke="#7b4f06" stroke-width="6" stroke-linejoin="round"/>
+            <circle cx="128" cy="40" r="9" fill="#ff4ba5" stroke="#7b4f06" stroke-width="4"/>
+            <rect x="28" y="52" width="16" height="100" rx="8" fill="#f29f34" stroke="#7b4f06" stroke-width="5" transform="rotate(-18 36 102)"/>
+            <circle cx="27" cy="48" r="16" fill="#ff4ba5" stroke="#7b4f06" stroke-width="5"/>
+            <path d="M29 30l8-11 7 12" fill="#ffc928" stroke="#7b4f06" stroke-width="4" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="blast" id="blast"></div>
+      </div>
+
+      <div class="answers" id="answers"></div>
+      <form class="text-input-panel" id="inputPanel">
+        <input id="answerInput" type="number" inputmode="numeric" autocomplete="off" aria-label="Type answer">
+        <button type="submit">GO</button>
+      </form>
+    </section>
+
+    <section class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <h2 id="modalTitle">Paused</h2>
+        <p id="modalText">Take a tiny breather.</p>
+        <div class="modal-actions">
+          <button class="pill selected" id="modalPrimary" type="button">Continue</button>
+          <button class="pill" id="modalSecondary" type="button">Settings</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const levels = {
+      meadow: {
+        name: "Meadow Rescue",
+        friend: "Pip",
+        target: 5,
+        creep: 8,
+        wrong: 24,
+        wrongBonus: 4,
+        loseDistance: 300
+      },
+      mushroom: {
+        name: "Mushroom Bridge",
+        friend: "Luma",
+        target: 8,
+        creep: 10,
+        wrong: 30,
+        wrongBonus: 6,
+        loseDistance: 320
+      },
+      castle: {
+        name: "Crown Castle",
+        friend: "Bobo",
+        target: 12,
+        creep: 12,
+        wrong: 36,
+        wrongBonus: 8,
+        loseDistance: 340
+      }
+    };
+
+    const settings = {
+      ops: { add: "10", sub: "10", mul: "off", div: "off" },
+      difficulty: "easy",
+      mode: "choice",
+      level: "meadow"
+    };
+
+    const difficultySteps = {
+      easy: { creep: .75, wrong: .75 },
+      medium: { creep: 1, wrong: 1 },
+      hard: { creep: 1.25, wrong: 1.2 }
+    };
+
+    const levelOrder = ["meadow", "mushroom", "castle"];
+
+    const merchItems = [
+      {
+        id: "spark",
+        type: "weapon",
+        name: "Spark Blaster",
+        icon: "S",
+        cost: 8,
+        text: "+1 bonus coin on correct answers."
+      },
+      {
+        id: "rainbow",
+        type: "weapon",
+        name: "Rainbow Cannon",
+        icon: "R",
+        cost: 18,
+        text: "+2 bonus coins on correct answers."
+      },
+      {
+        id: "goggles",
+        type: "accessory",
+        name: "Time Goggles",
+        icon: "G",
+        cost: 10,
+        text: "Enemy creeps 10% slower."
+      },
+      {
+        id: "cape",
+        type: "accessory",
+        name: "Brave Cape",
+        icon: "C",
+        cost: 16,
+        text: "Wrong-answer rush is 20% smaller."
+      }
+    ];
+
+    let currentProblem = null;
+    let coins = 0;
+    let bankCoins = 0;
+    let enemyDistance = 0;
+    let enemyHealth = 5;
+    let enemyMaxHealth = 5;
+    let rescueProgress = 0;
+    let wrongStreak = 0;
+    let timeLeft = 60;
+    let timerId = null;
+    let enemyAdvanceId = null;
+    let lastEnemyAdvance = 0;
+    let locked = false;
+    let gameOver = false;
+    let paused = false;
+    let ownedMerch = [];
+    let equippedMerch = { weapon: "", accessory: "" };
+
+    const app = document.querySelector(".app");
+    const landingScreen = document.getElementById("landingScreen");
+    const levelScreen = document.getElementById("levelScreen");
+    const setupScreen = document.getElementById("setupScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    const landingStart = document.getElementById("landingStart");
+    const levelNext = document.getElementById("levelNext");
+    const levelBack = document.getElementById("levelBack");
+    const settingsBack = document.getElementById("settingsBack");
+    const startButton = document.getElementById("startButton");
+    const pauseButton = document.getElementById("pauseButton");
+    const problemText = document.getElementById("problemText");
+    const answers = document.getElementById("answers");
+    const inputPanel = document.getElementById("inputPanel");
+    const answerInput = document.getElementById("answerInput");
+    const coinCount = document.getElementById("coinCount");
+    const bankCoinsText = document.getElementById("bankCoins");
+    const shopItems = document.getElementById("shopItems");
+    const timerText = document.getElementById("timerText");
+    const rescueText = document.getElementById("rescueText");
+    const enemy = document.getElementById("enemy");
+    const hero = document.getElementById("hero");
+    const friend = document.getElementById("friend");
+    const healthFill = document.getElementById("healthFill");
+    const blast = document.getElementById("blast");
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalText = document.getElementById("modalText");
+    const modalPrimary = document.getElementById("modalPrimary");
+    const modalSecondary = document.getElementById("modalSecondary");
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffle(items) {
+      return items
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(item => item.value);
+    }
+
+    function activeOps() {
+      return Object.entries(settings.ops).filter(([, value]) => value !== "off");
+    }
+
+    function setScreen(name) {
+      landingScreen.classList.toggle("active", name === "landing");
+      levelScreen.classList.toggle("active", name === "level");
+      setupScreen.classList.toggle("active", name === "setup");
+      gameScreen.classList.toggle("active", name === "game");
+      if (name === "level") renderShop();
+    }
+
+    function loadProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("math-rescue-progress") || "{}");
+        bankCoins = Number(saved.bankCoins) || 0;
+        ownedMerch = Array.isArray(saved.ownedMerch) ? saved.ownedMerch : [];
+        equippedMerch = {
+          weapon: saved.equippedMerch?.weapon || "",
+          accessory: saved.equippedMerch?.accessory || ""
+        };
+      } catch {
+        bankCoins = 0;
+        ownedMerch = [];
+        equippedMerch = { weapon: "", accessory: "" };
+      }
+      applyMerch();
+      renderShop();
+    }
+
+    function saveProgress() {
+      localStorage.setItem("math-rescue-progress", JSON.stringify({
+        bankCoins,
+        ownedMerch,
+        equippedMerch
+      }));
+    }
+
+    function merchById(id) {
+      return merchItems.find(item => item.id === id);
+    }
+
+    function equippedItem(type) {
+      return merchById(equippedMerch[type]);
+    }
+
+    function applyMerch() {
+      app.dataset.weapon = equippedMerch.weapon || "";
+      app.dataset.accessory = equippedMerch.accessory || "";
+    }
+
+    function awardCoins(amount) {
+      coins += amount;
+      bankCoins += amount;
+      coinCount.textContent = coins;
+      renderShop();
+      saveProgress();
+    }
+
+    function renderShop() {
+      bankCoinsText.textContent = bankCoins;
+      shopItems.innerHTML = "";
+      merchItems.forEach(item => {
+        const isOwned = ownedMerch.includes(item.id);
+        const isEquipped = equippedMerch[item.type] === item.id;
+        const card = document.createElement("article");
+        card.className = `shop-item${isEquipped ? " equipped" : ""}`;
+        const icon = document.createElement("div");
+        icon.className = "shop-icon";
+        icon.textContent = item.icon;
+        const copy = document.createElement("div");
+        copy.className = "shop-copy";
+        copy.innerHTML = `<h3>${item.name}</h3><p>${item.text}</p>`;
+        const action = document.createElement("button");
+        action.className = `shop-action${isOwned && !isEquipped ? " ready" : ""}`;
+        action.type = "button";
+        action.textContent = isEquipped ? "Equipped" : isOwned ? "Equip" : `${item.cost} coins`;
+        action.disabled = isEquipped || (!isOwned && bankCoins < item.cost);
+        action.addEventListener("click", () => {
+          if (!isOwned) {
+            bankCoins -= item.cost;
+            ownedMerch.push(item.id);
+          }
+          equippedMerch[item.type] = item.id;
+          applyMerch();
+          saveProgress();
+          renderShop();
+        });
+        card.append(icon, copy, action);
+        shopItems.append(card);
+      });
+    }
+
+    function selectPill(group, target, attr, store) {
+      group.querySelectorAll(".pill").forEach(button => button.classList.remove("selected"));
+      target.classList.add("selected");
+      store(target.dataset[attr]);
+    }
+
+    document.querySelectorAll(".op-column").forEach(column => {
+      column.addEventListener("click", event => {
+        const button = event.target.closest(".pill");
+        if (!button) return;
+        selectPill(column, button, "value", value => {
+          settings.ops[column.dataset.op] = value;
+        });
+      });
+    });
+
+    document.getElementById("difficultyButtons").addEventListener("click", event => {
+      const button = event.target.closest(".pill");
+      if (!button) return;
+      selectPill(event.currentTarget, button, "difficulty", value => settings.difficulty = value);
+    });
+
+    document.getElementById("modeButtons").addEventListener("click", event => {
+      const button = event.target.closest(".pill");
+      if (!button) return;
+      selectPill(event.currentTarget, button, "mode", value => settings.mode = value);
+    });
+
+    document.getElementById("levelButtons").addEventListener("click", event => {
+      const button = event.target.closest(".level-option");
+      if (!button) return;
+      event.currentTarget.querySelectorAll(".level-option").forEach(option => option.classList.remove("selected"));
+      button.classList.add("selected");
+      settings.level = button.dataset.level;
+    });
+
+    function buildProblem() {
+      const ops = activeOps();
+      const [op, rawLimit] = ops[randomInt(0, ops.length - 1)];
+      const limit = rawLimit === "custom" ? 12 : Number(rawLimit);
+      let a;
+      let b;
+      let answer;
+      let symbol;
+
+      if (op === "add") {
+        a = randomInt(1, limit);
+        b = randomInt(1, limit);
+        answer = a + b;
+        symbol = "+";
+      } else if (op === "sub") {
+        a = randomInt(1, limit);
+        b = randomInt(1, limit);
+        if (b > a) [a, b] = [b, a];
+        answer = a - b;
+        symbol = "-";
+      } else if (op === "mul") {
+        a = randomInt(1, limit);
+        b = randomInt(1, limit);
+        answer = a * b;
+        symbol = "x";
+      } else {
+        b = randomInt(1, limit);
+        answer = randomInt(1, limit);
+        a = b * answer;
+        symbol = "÷";
+      }
+
+      return { a, b, symbol, answer, text: `${a} ${symbol} ${b} =` };
+    }
+
+    function answerChoices(answer) {
+      const values = new Set([answer]);
+      const spread = Math.max(4, Math.ceil(Math.abs(answer) * .3));
+      while (values.size < 4) {
+        const offset = randomInt(-spread, spread);
+        const candidate = answer + offset;
+        if (candidate >= 0 && candidate !== answer) values.add(candidate);
+      }
+      return shuffle([...values]);
+    }
+
+    function renderProblem() {
+      if (gameOver || paused) return;
+      currentProblem = buildProblem();
+      problemText.textContent = currentProblem.text;
+      locked = false;
+
+      if (settings.mode === "choice") {
+        answers.style.display = "grid";
+        inputPanel.classList.remove("active");
+        answers.innerHTML = "";
+        answerChoices(currentProblem.answer).forEach(value => {
+          const button = document.createElement("button");
+          button.className = "answer";
+          button.type = "button";
+          button.textContent = value;
+          button.addEventListener("click", () => checkAnswer(value, button));
+          answers.append(button);
+        });
+      } else {
+        answers.style.display = "none";
+        inputPanel.classList.add("active");
+        answerInput.value = "";
+        setTimeout(() => answerInput.focus(), 80);
+      }
+    }
+
+    function updateEnemyPosition() {
+      const minRight = window.innerWidth < 540 ? 6 : 34;
+      const right = minRight + enemyDistance;
+      enemy.style.setProperty("--enemy-right", `${right}px`);
+    }
+
+    function updateHealth() {
+      const width = Math.max(0, Math.round((enemyHealth / enemyMaxHealth) * 100));
+      healthFill.style.setProperty("--hp", `${width}%`);
+    }
+
+    function updateRescueText() {
+      const level = levels[settings.level];
+      rescueText.textContent = `${level.friend} ${rescueProgress}/${level.target}`;
+    }
+
+    function updateTimerText() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = String(timeLeft % 60).padStart(2, "0");
+      timerText.textContent = `${minutes}:${seconds}`;
+    }
+
+    function currentLevelIndex() {
+      return levelOrder.indexOf(settings.level);
+    }
+
+    function syncLevelSelection() {
+      document.querySelectorAll(".level-option").forEach(option => {
+        option.classList.toggle("selected", option.dataset.level === settings.level);
+      });
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      timerId = setInterval(() => {
+        if (paused || gameOver) return;
+        timeLeft -= 1;
+        updateTimerText();
+        if (timeLeft <= 0) {
+          endGame(false, "Time is up. The friend is still trapped.");
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerId);
+      timerId = null;
+    }
+
+    function startEnemyAdvance() {
+      stopEnemyAdvance();
+      lastEnemyAdvance = performance.now();
+      enemyAdvanceId = setInterval(() => {
+        if (paused || gameOver) {
+          lastEnemyAdvance = performance.now();
+          return;
+        }
+        const now = performance.now();
+        const elapsedSeconds = (now - lastEnemyAdvance) / 1000;
+        lastEnemyAdvance = now;
+        const level = levels[settings.level];
+        const accessory = equippedItem("accessory");
+        const creepBoost = accessory?.id === "goggles" ? .9 : 1;
+        enemyDistance += (level.loseDistance / 60) * elapsedSeconds * creepBoost;
+        updateEnemyPosition();
+        if (enemyDistance >= level.loseDistance) {
+          endGame(false, "The enemy reached the hero.");
+        }
+      }, 120);
+    }
+
+    function stopEnemyAdvance() {
+      clearInterval(enemyAdvanceId);
+      enemyAdvanceId = null;
+    }
+
+    function flash(element, className) {
+      element.classList.remove(className);
+      void element.offsetWidth;
+      element.classList.add(className);
+      setTimeout(() => element.classList.remove(className), 420);
+    }
+
+    function shoot() {
+      blast.classList.remove("fire");
+      void blast.offsetWidth;
+      blast.classList.add("fire");
+      flash(enemy, "hit");
+    }
+
+    function enemyAttack() {
+      flash(hero, "hit");
+      enemy.classList.add("attack");
+      setTimeout(() => enemy.classList.remove("attack"), 360);
+    }
+
+    function checkAnswer(value, button) {
+      if (locked || gameOver || paused) return;
+      locked = true;
+      const numeric = Number(value);
+      const isCorrect = numeric === currentProblem.answer;
+      const difficulty = difficultySteps[settings.difficulty];
+      const level = levels[settings.level];
+
+      if (button) button.classList.add(isCorrect ? "correct" : "wrong");
+
+      if (isCorrect) {
+        const weapon = equippedItem("weapon");
+        const coinBonus = weapon?.id === "rainbow" ? 2 : weapon?.id === "spark" ? 1 : 0;
+        awardCoins(1 + coinBonus);
+        rescueProgress += 1;
+        enemyHealth -= 1;
+        wrongStreak = 0;
+        updateRescueText();
+        shoot();
+        updateHealth();
+      } else {
+        const accessory = equippedItem("accessory");
+        const rushShield = accessory?.id === "cape" ? .8 : 1;
+        wrongStreak += 1;
+        enemyDistance += Math.round((level.wrong + (wrongStreak - 1) * level.wrongBonus) * difficulty.wrong * rushShield);
+        enemyAttack();
+      }
+
+      updateEnemyPosition();
+
+      setTimeout(() => {
+        if (gameOver) return;
+        if (rescueProgress >= level.target) {
+          endGame(true);
+        } else if (enemyDistance >= level.loseDistance) {
+          endGame(false, "The enemy reached the hero.");
+        } else {
+          renderProblem();
+        }
+      }, 700);
+    }
+
+    inputPanel.addEventListener("submit", event => {
+      event.preventDefault();
+      if (!answerInput.value) return;
+      checkAnswer(answerInput.value);
+    });
+
+    function startGame() {
+      if (activeOps().length === 0) {
+        settings.ops.add = "10";
+        document.querySelector('[data-op="add"] [data-value="off"]').classList.remove("selected");
+        document.querySelector('[data-op="add"] [data-value="10"]').classList.add("selected");
+      }
+      const level = levels[settings.level];
+      syncLevelSelection();
+      stopTimer();
+      stopEnemyAdvance();
+      coins = 0;
+      enemyDistance = 0;
+      enemyMaxHealth = level.target;
+      enemyHealth = enemyMaxHealth;
+      rescueProgress = 0;
+      wrongStreak = 0;
+      timeLeft = 60;
+      locked = false;
+      gameOver = false;
+      paused = false;
+      coinCount.textContent = "0";
+      friend.classList.remove("saved");
+      updateEnemyPosition();
+      updateHealth();
+      updateRescueText();
+      updateTimerText();
+      setScreen("game");
+      renderProblem();
+      startTimer();
+      startEnemyAdvance();
+    }
+
+    function endGame(won, reason = "") {
+      gameOver = true;
+      stopTimer();
+      stopEnemyAdvance();
+      if (won) friend.classList.add("saved");
+      const level = levels[settings.level];
+      if (won) {
+        const winBonus = Math.max(5, Math.ceil(timeLeft / 5));
+        awardCoins(winBonus);
+      }
+      const nextLevel = levelOrder[currentLevelIndex() + 1];
+      if (won && nextLevel) {
+        problemText.textContent = `${level.friend} saved!`;
+        setTimeout(() => {
+          settings.level = nextLevel;
+          startGame();
+        }, 1000);
+        return;
+      }
+      showModal(
+        won ? "All Friends Saved!" : "Try Again!",
+        won ? `You saved every friend. Coins: ${coins}.` : `${reason} Coins: ${coins}. Saved: ${rescueProgress}/${level.target}.`,
+        "Play Again",
+        "Map",
+        startGame,
+        () => {
+          hideModal();
+          setScreen("level");
+        }
+      );
+    }
+
+    function showModal(title, text, primary, secondary, primaryAction, secondaryAction) {
+      modalTitle.textContent = title;
+      modalText.textContent = text;
+      modalPrimary.textContent = primary;
+      modalSecondary.textContent = secondary;
+      modalPrimary.onclick = () => {
+        hideModal();
+        primaryAction();
+      };
+      modalSecondary.onclick = secondaryAction;
+      modal.classList.add("active");
+    }
+
+    function hideModal() {
+      modal.classList.remove("active");
+      paused = false;
+    }
+
+    landingStart.addEventListener("click", () => setScreen("level"));
+    levelBack.addEventListener("click", () => setScreen("landing"));
+    levelNext.addEventListener("click", () => setScreen("setup"));
+    settingsBack.addEventListener("click", () => setScreen("level"));
+    startButton.addEventListener("click", startGame);
+    pauseButton.addEventListener("click", () => {
+      paused = true;
+      showModal(
+        "Paused",
+        "Ready when you are.",
+        "Continue",
+        "Settings",
+        hideModal,
+        () => {
+          gameOver = true;
+          stopTimer();
+          stopEnemyAdvance();
+          hideModal();
+          setScreen("setup");
+        }
+      );
+    });
+
+    window.addEventListener("resize", updateEnemyPosition);
+    loadProgress();
+  </script>
+</body>
+</html>
