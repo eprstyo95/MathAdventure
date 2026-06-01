@@ -69,12 +69,15 @@
     }
 
     .landing,
-    .level-select {
+    .level-select,
+    .merch-screen {
       padding: clamp(18px, 4vw, 44px);
     }
 
-    .level-select {
-      overflow: auto;
+    .level-select,
+    .merch-screen {
+      padding: 0;
+      overflow: hidden;
     }
 
     .landing-card,
@@ -291,6 +294,330 @@
 
     .level-option p {
       font-size: clamp(1rem, 1.8vw, 1.45rem);
+    }
+
+    .map-world {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 24% 18%, rgba(255,255,255,.28) 0 7%, transparent 7.2%),
+        radial-gradient(ellipse at 48% 25%, rgba(255,255,255,.24) 0 7%, transparent 7.2%),
+        radial-gradient(ellipse at 72% 18%, rgba(255,255,255,.25) 0 7%, transparent 7.2%),
+        radial-gradient(ellipse at 36% 39%, #4ec9de 0 7%, transparent 7.2%),
+        radial-gradient(ellipse at 57% 41%, #53cadd 0 7%, transparent 7.2%),
+        radial-gradient(ellipse at 99% 36%, #ff9b8d 0 10%, transparent 10.2%),
+        radial-gradient(ellipse at 75% 76%, #28c6dc 0 14%, transparent 14.2%),
+        linear-gradient(180deg, #c9f3f6 0 38%, #bce9b1 38% 100%);
+    }
+
+    .map-world::before {
+      content: "";
+      position: absolute;
+      inset: 46% -6% auto -4%;
+      height: 22%;
+      border-radius: 55% 45% 45% 55%;
+      background: #f6c889;
+      box-shadow: 0 12px 0 rgba(122, 88, 41, .16) inset;
+      transform: rotate(-5deg);
+    }
+
+    .map-pond {
+      position: absolute;
+      right: 12%;
+      bottom: 17%;
+      width: min(35vw, 620px);
+      height: min(22vw, 310px);
+      border: 16px solid rgba(117, 78, 47, .6);
+      border-radius: 52% 48% 54% 46%;
+      background: radial-gradient(circle at 38% 38%, #62e7f2 0 16%, transparent 16.5%), linear-gradient(#36c7e2, #159fc9);
+      box-shadow: 0 16px 0 rgba(255,255,255,.25) inset;
+    }
+
+    .map-hill {
+      position: absolute;
+      left: -6%;
+      right: -4%;
+      bottom: -5%;
+      height: 26%;
+      border-radius: 50% 50% 0 0;
+      background:
+        radial-gradient(circle at 9% 36%, #ff5d9e 0 .8%, transparent .9%),
+        radial-gradient(circle at 24% 62%, #5cd8ff 0 .75%, transparent .85%),
+        radial-gradient(circle at 44% 55%, #ff5d9e 0 .75%, transparent .85%),
+        radial-gradient(circle at 66% 40%, #5cd8ff 0 .75%, transparent .85%),
+        radial-gradient(circle at 82% 62%, #ff5d9e 0 .75%, transparent .85%),
+        linear-gradient(#dff6a4, #b6e978);
+    }
+
+    .map-topbar {
+      position: absolute;
+      z-index: 4;
+      inset: clamp(22px, 3vw, 46px) clamp(22px, 3vw, 46px) auto clamp(22px, 3vw, 46px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .map-actions {
+      display: flex;
+      gap: 22px;
+      pointer-events: auto;
+    }
+
+    .map-topbar .hud-button,
+    .merch-topbar .hud-button {
+      position: static;
+      width: clamp(86px, 11vw, 132px);
+      font-size: clamp(3.6rem, 7vw, 6rem);
+      line-height: .7;
+    }
+
+    .circle-action {
+      width: clamp(86px, 11vw, 132px);
+      aspect-ratio: 1;
+      border: 10px solid #fff;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(#ffbf59, #ff9b41);
+      box-shadow: 0 8px 20px rgba(42, 83, 112, .18);
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      font-weight: 900;
+    }
+
+    .map-path {
+      position: absolute;
+      z-index: 3;
+      inset: 0;
+    }
+
+    .map-node {
+      position: absolute;
+      width: clamp(92px, 10vw, 134px);
+      aspect-ratio: 1;
+      border: 10px solid #fff;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(#ffe497, #f0ba4a);
+      box-shadow: 0 12px 0 rgba(255,255,255,.3), 0 12px 24px rgba(48, 91, 84, .18);
+      font-size: clamp(2.1rem, 4.6vw, 4.2rem);
+      font-weight: 900;
+      transform: translate(-50%, -50%);
+    }
+
+    .map-node.selected {
+      background: linear-gradient(#c8fb49, #9bd21b);
+    }
+
+    .map-node::before {
+      content: none;
+    }
+
+    .map-stars {
+      position: absolute;
+      top: calc(50% + clamp(45px, 5vw, 66px));
+      left: 50%;
+      display: flex;
+      gap: 8px;
+      transform: translateX(-50%);
+      color: #ffc922;
+      -webkit-text-stroke: 3px #9b5b08;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .node-1 { left: 2%; top: 82%; }
+    .node-2 { left: 15%; top: 77%; }
+    .node-3 { left: 28%; top: 64%; }
+    .node-4 { left: 41%; top: 55%; }
+    .node-5 { left: 54%; top: 53%; }
+    .node-6 { left: 67%; top: 54%; }
+    .node-7 { left: 80%; top: 58%; }
+    .node-8 { left: 93%; top: 65%; }
+
+    .merch-world {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(55,151,201,.16) 0 10%, transparent 10.2%),
+        radial-gradient(circle at 91% 0%, rgba(55,151,201,.12) 0 15%, transparent 15.2%),
+        linear-gradient(180deg, #c9f0ff, #41bbed 78%, #5b9bd4 78% 100%);
+    }
+
+    .merch-topbar {
+      position: absolute;
+      z-index: 4;
+      inset: clamp(22px, 3vw, 46px) clamp(22px, 3vw, 46px) auto clamp(22px, 3vw, 46px);
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .merch-topbar > * {
+      pointer-events: auto;
+    }
+
+    .closet-bank {
+      min-width: clamp(170px, 18vw, 250px);
+      min-height: clamp(66px, 8vw, 92px);
+      border: 9px solid #fff;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #fff;
+      background: linear-gradient(#83a9ff, #5b95f5);
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      font-weight: 900;
+      box-shadow: 0 8px 20px rgba(42, 83, 112, .18);
+    }
+
+    .closet-character {
+      position: absolute;
+      z-index: 2;
+      left: clamp(44px, 8vw, 150px);
+      bottom: clamp(72px, 8vw, 126px);
+      width: min(29vw, 360px);
+      min-width: 220px;
+      display: grid;
+      justify-items: center;
+    }
+
+    .closet-character .character-svg {
+      filter: drop-shadow(0 18px 18px rgba(30, 75, 102, .25));
+    }
+
+    .pedestal {
+      width: 72%;
+      height: 58px;
+      border: 7px solid #093e76;
+      border-radius: 50%;
+      background: linear-gradient(#d8fbff, #74c9f2);
+      box-shadow: 0 32px 0 #2e67bb, 0 38px 0 #093e76;
+      margin-top: -12px;
+    }
+
+    .closet-panel {
+      position: absolute;
+      z-index: 3;
+      right: clamp(36px, 6vw, 110px);
+      bottom: clamp(38px, 5vw, 92px);
+      width: min(58vw, 760px);
+      height: min(68vh, 610px);
+      border: 14px solid #fff;
+      border-radius: 48px;
+      padding: clamp(28px, 3vw, 48px);
+      background: linear-gradient(#b4c7ff, #7f9fee);
+      box-shadow: 0 18px 35px rgba(38, 74, 115, .18);
+    }
+
+    .closet-tabs {
+      position: absolute;
+      left: 7%;
+      right: 7%;
+      top: -98px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(12px, 2vw, 28px);
+    }
+
+    .closet-tab {
+      height: 112px;
+      border: 12px solid #fff;
+      border-bottom: 0;
+      border-radius: 34px 34px 0 0;
+      color: #fff;
+      background: linear-gradient(#a8bdff, #7798ee);
+      font-size: clamp(2rem, 4vw, 4rem);
+      font-weight: 900;
+    }
+
+    .closet-tab.selected {
+      background: linear-gradient(#ffbf59, #ff9b41);
+    }
+
+    .closet-grid {
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(18px, 2vw, 28px);
+      overflow: auto;
+      padding-right: 6px;
+    }
+
+    .closet-item {
+      min-height: 205px;
+      border: 10px solid #fff;
+      border-radius: 20px;
+      display: grid;
+      grid-template-rows: minmax(118px, 1fr) auto;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .closet-art {
+      position: relative;
+      display: grid;
+      place-items: center;
+      background: #dfe8ff;
+    }
+
+    .closet-art::before {
+      content: "";
+      width: 68%;
+      aspect-ratio: 1.1;
+      border-radius: 24px 24px 34px 34px;
+      background: var(--item-color, #fff);
+      box-shadow: inset 0 -12px 0 rgba(0,0,0,.08), inset 0 10px 0 rgba(255,255,255,.35);
+      clip-path: polygon(18% 10%, 37% 0, 50% 12%, 63% 0, 82% 10%, 96% 31%, 82% 45%, 76% 92%, 24% 92%, 18% 45%, 4% 31%);
+    }
+
+    .closet-art[data-kind="hat"]::before {
+      width: 58%;
+      aspect-ratio: 1.5;
+      border-radius: 50% 50% 12px 12px;
+      clip-path: none;
+    }
+
+    .closet-art[data-kind="glasses"]::before {
+      width: 72%;
+      aspect-ratio: 2.4;
+      border: 14px solid #fff;
+      border-left-width: 18px;
+      border-right-width: 18px;
+      border-radius: 999px;
+      background: transparent;
+      box-shadow: none;
+      clip-path: none;
+    }
+
+    .closet-art[data-kind="charm"]::before {
+      width: 42%;
+      aspect-ratio: 1;
+      border-radius: 45% 55% 55% 45%;
+      transform: rotate(-24deg);
+      clip-path: none;
+    }
+
+    .closet-action {
+      min-height: 52px;
+      color: var(--ink);
+      background: #fff;
+      font-size: clamp(.95rem, 1.5vw, 1.2rem);
+      font-weight: 900;
+    }
+
+    .closet-item.equipped .closet-action {
+      color: #99d729;
+      font-size: clamp(2rem, 3vw, 3rem);
     }
 
     .setup {
@@ -1065,33 +1392,63 @@
     </section>
 
     <section class="screen level-select" id="levelScreen">
-      <div class="level-card">
-        <div class="hub-top">
-          <h1 class="setup-title">Rescue Map</h1>
-          <div class="bank-box"><span class="coin" aria-hidden="true"></span><span id="bankCoins">0</span></div>
+      <div class="map-world">
+        <div class="map-pond"></div>
+        <div class="map-hill"></div>
+        <div class="map-topbar">
+          <button class="hud-button" id="levelBack" type="button" aria-label="Back">‹</button>
+          <div class="map-actions">
+            <button class="circle-action" id="openMerch" type="button" aria-label="Merch shop">⌒</button>
+            <button class="circle-action" id="levelNext" type="button" aria-label="Math settings">+-</button>
+          </div>
         </div>
-        <p class="map-label">Choose a rescue path</p>
-        <div class="levels" id="levelButtons">
-          <button class="level-option selected" type="button" data-level="meadow" data-step="1">
-            <h2>Meadow Rescue</h2>
-            <p>Save Pip with 5 correct answers.</p>
-            <p>Gentle enemy steps.</p>
-          </button>
-          <button class="level-option" type="button" data-level="mushroom" data-step="2">
-            <h2>Mushroom Bridge</h2>
-            <p>Save Luma with 8 correct answers.</p>
-            <p>Wrong answers move the enemy faster.</p>
-          </button>
-          <button class="level-option" type="button" data-level="castle" data-step="3">
-            <h2>Crown Castle</h2>
-            <p>Save Bobo with 12 correct answers.</p>
-            <p>The enemy rushes hard.</p>
-          </button>
+        <div class="map-path" id="levelButtons" aria-label="Rescue map">
+          <button class="map-node level-option node-1 selected" type="button" data-level="meadow">1<span class="map-stars">★★★</span></button>
+          <button class="map-node level-option node-2" type="button" data-level="mushroom">2<span class="map-stars">★★★</span></button>
+          <button class="map-node level-option node-3" type="button" data-level="castle">3<span class="map-stars">★★★</span></button>
+          <button class="map-node level-option node-4" type="button" data-level="grove">4<span class="map-stars">★★★</span></button>
+          <button class="map-node level-option node-5" type="button" data-level="pond">5<span class="map-stars">★★★</span></button>
+          <button class="map-node level-option node-6" type="button" data-level="bridge">6<span class="map-stars">★★★</span></button>
+          <button class="map-node level-option node-7" type="button" data-level="falls">7<span class="map-stars">★★★</span></button>
+          <button class="map-node level-option node-8" type="button" data-level="tower">8<span class="map-stars">★★★</span></button>
         </div>
-        <p class="map-label">Merch shop</p>
-        <div class="shop" id="shopItems"></div>
-        <button class="round-button back" id="levelBack" type="button" aria-label="Back">‹</button>
-        <button class="round-button start" id="levelNext" type="button">OK</button>
+      </div>
+    </section>
+
+    <section class="screen merch-screen" id="merchScreen">
+      <div class="merch-world">
+        <div class="merch-topbar">
+          <button class="hud-button" id="merchBack" type="button" aria-label="Back">‹</button>
+          <div class="closet-bank"><span class="coin" aria-hidden="true"></span><span id="bankCoins">0</span></div>
+        </div>
+        <div class="closet-character">
+          <svg class="character-svg" viewBox="0 0 180 190" role="img" aria-label="Hero preview">
+            <ellipse cx="82" cy="168" rx="38" ry="10" fill="rgba(53,81,87,.18)"/>
+            <circle cx="56" cy="50" r="30" fill="#dccdbb" stroke="#6f4939" stroke-width="5"/>
+            <circle cx="105" cy="50" r="30" fill="#dccdbb" stroke="#6f4939" stroke-width="5"/>
+            <circle cx="56" cy="50" r="18" fill="#ff9e91"/>
+            <circle cx="105" cy="50" r="18" fill="#ff9e91"/>
+            <rect x="44" y="50" width="78" height="88" rx="34" fill="#dbcbb6" stroke="#6f4939" stroke-width="5"/>
+            <circle cx="67" cy="83" r="17" fill="#fff"/>
+            <circle cx="101" cy="83" r="17" fill="#fff"/>
+            <circle cx="72" cy="84" r="9" fill="#241915"/>
+            <circle cx="96" cy="84" r="9" fill="#241915"/>
+            <ellipse cx="83" cy="101" rx="17" ry="22" fill="#2a1b18"/>
+            <path d="M63 34c13-12 32-12 46 0" fill="none" stroke="#7b4f3f" stroke-width="5" stroke-linecap="round"/>
+            <rect x="41" y="118" width="18" height="48" rx="8" fill="#5a3b35"/>
+            <rect x="107" y="118" width="18" height="48" rx="8" fill="#5a3b35"/>
+          </svg>
+          <div class="pedestal"></div>
+        </div>
+        <div class="closet-panel">
+          <div class="closet-tabs" id="shopTabs">
+            <button class="closet-tab selected" type="button" data-category="outfit">T</button>
+            <button class="closet-tab" type="button" data-category="hat">⌂</button>
+            <button class="closet-tab" type="button" data-category="glasses">∞</button>
+            <button class="closet-tab" type="button" data-category="charm">✦</button>
+          </div>
+          <div class="closet-grid" id="shopItems"></div>
+        </div>
       </div>
     </section>
 
@@ -1279,6 +1636,51 @@
         wrong: 36,
         wrongBonus: 8,
         loseDistance: 340
+      },
+      grove: {
+        name: "Berry Grove",
+        friend: "Nini",
+        target: 14,
+        creep: 13,
+        wrong: 38,
+        wrongBonus: 9,
+        loseDistance: 350
+      },
+      pond: {
+        name: "Lotus Pond",
+        friend: "Momo",
+        target: 16,
+        creep: 14,
+        wrong: 40,
+        wrongBonus: 10,
+        loseDistance: 360
+      },
+      bridge: {
+        name: "Bridge Dash",
+        friend: "Kiki",
+        target: 18,
+        creep: 15,
+        wrong: 42,
+        wrongBonus: 11,
+        loseDistance: 370
+      },
+      falls: {
+        name: "Star Falls",
+        friend: "Toto",
+        target: 20,
+        creep: 16,
+        wrong: 44,
+        wrongBonus: 12,
+        loseDistance: 380
+      },
+      tower: {
+        name: "Moon Tower",
+        friend: "Zuzu",
+        target: 24,
+        creep: 17,
+        wrong: 48,
+        wrongBonus: 13,
+        loseDistance: 400
       }
     };
 
@@ -1295,38 +1697,87 @@
       hard: { creep: 1.25, wrong: 1.2 }
     };
 
-    const levelOrder = ["meadow", "mushroom", "castle"];
+    const levelOrder = ["meadow", "mushroom", "castle", "grove", "pond", "bridge", "falls", "tower"];
 
     const merchItems = [
       {
-        id: "spark",
-        type: "weapon",
-        name: "Spark Blaster",
-        icon: "S",
+        id: "plain",
+        category: "outfit",
+        name: "Everyday Tee",
+        color: "#ffffff",
+        kind: "outfit",
+        cost: 0,
+        text: "Already owned."
+      },
+      {
+        id: "scout",
+        category: "outfit",
+        name: "Scout Coat",
+        color: "#c28b52",
+        kind: "outfit",
         cost: 8,
         text: "+1 bonus coin on correct answers."
       },
       {
-        id: "rainbow",
-        type: "weapon",
-        name: "Rainbow Cannon",
-        icon: "R",
+        id: "winter",
+        category: "outfit",
+        name: "Winter Jumper",
+        color: "#44c7f0",
+        kind: "outfit",
         cost: 18,
         text: "+2 bonus coins on correct answers."
       },
       {
-        id: "goggles",
-        type: "accessory",
-        name: "Time Goggles",
-        icon: "G",
+        id: "topper",
+        category: "hat",
+        name: "Tall Hat",
+        color: "#ffffff",
+        kind: "hat",
         cost: 10,
         text: "Enemy creeps 10% slower."
       },
       {
+        id: "crown",
+        category: "hat",
+        name: "Rescue Crown",
+        color: "#ffc928",
+        kind: "hat",
+        cost: 16,
+        text: "Wrong-answer rush is 20% smaller."
+      },
+      {
+        id: "goggles",
+        category: "glasses",
+        name: "Time Goggles",
+        color: "#ffffff",
+        kind: "glasses",
+        cost: 12,
+        text: "Enemy creeps 10% slower."
+      },
+      {
+        id: "round",
+        category: "glasses",
+        name: "Focus Specs",
+        color: "#7df0ff",
+        kind: "glasses",
+        cost: 14,
+        text: "+1 bonus coin on correct answers."
+      },
+      {
+        id: "spark",
+        category: "charm",
+        name: "Spark Charm",
+        color: "#ff76b5",
+        kind: "charm",
+        cost: 8,
+        text: "+1 bonus coin on correct answers."
+      },
+      {
         id: "cape",
-        type: "accessory",
-        name: "Brave Cape",
-        icon: "C",
+        category: "charm",
+        name: "Brave Charm",
+        color: "#baf43b",
+        kind: "charm",
         cost: 16,
         text: "Wrong-answer rush is 20% smaller."
       }
@@ -1348,16 +1799,20 @@
     let gameOver = false;
     let paused = false;
     let ownedMerch = [];
-    let equippedMerch = { weapon: "", accessory: "" };
+    let equippedMerch = { outfit: "plain", hat: "", glasses: "", charm: "" };
+    let selectedShopCategory = "outfit";
 
     const app = document.querySelector(".app");
     const landingScreen = document.getElementById("landingScreen");
     const levelScreen = document.getElementById("levelScreen");
+    const merchScreen = document.getElementById("merchScreen");
     const setupScreen = document.getElementById("setupScreen");
     const gameScreen = document.getElementById("gameScreen");
     const landingStart = document.getElementById("landingStart");
     const levelNext = document.getElementById("levelNext");
     const levelBack = document.getElementById("levelBack");
+    const openMerch = document.getElementById("openMerch");
+    const merchBack = document.getElementById("merchBack");
     const settingsBack = document.getElementById("settingsBack");
     const startButton = document.getElementById("startButton");
     const pauseButton = document.getElementById("pauseButton");
@@ -1368,6 +1823,7 @@
     const coinCount = document.getElementById("coinCount");
     const bankCoinsText = document.getElementById("bankCoins");
     const shopItems = document.getElementById("shopItems");
+    const shopTabs = document.getElementById("shopTabs");
     const timerText = document.getElementById("timerText");
     const rescueText = document.getElementById("rescueText");
     const enemy = document.getElementById("enemy");
@@ -1399,9 +1855,11 @@
     function setScreen(name) {
       landingScreen.classList.toggle("active", name === "landing");
       levelScreen.classList.toggle("active", name === "level");
+      merchScreen.classList.toggle("active", name === "merch");
       setupScreen.classList.toggle("active", name === "setup");
       gameScreen.classList.toggle("active", name === "game");
-      if (name === "level") renderShop();
+      if (name === "level") syncLevelSelection();
+      if (name === "merch") renderShop();
     }
 
     function loadProgress() {
@@ -1409,14 +1867,17 @@
         const saved = JSON.parse(localStorage.getItem("math-rescue-progress") || "{}");
         bankCoins = Number(saved.bankCoins) || 0;
         ownedMerch = Array.isArray(saved.ownedMerch) ? saved.ownedMerch : [];
+        if (!ownedMerch.includes("plain")) ownedMerch.push("plain");
         equippedMerch = {
-          weapon: saved.equippedMerch?.weapon || "",
-          accessory: saved.equippedMerch?.accessory || ""
+          outfit: saved.equippedMerch?.outfit || "plain",
+          hat: saved.equippedMerch?.hat || "",
+          glasses: saved.equippedMerch?.glasses || "",
+          charm: saved.equippedMerch?.charm || ""
         };
       } catch {
         bankCoins = 0;
-        ownedMerch = [];
-        equippedMerch = { weapon: "", accessory: "" };
+        ownedMerch = ["plain"];
+        equippedMerch = { outfit: "plain", hat: "", glasses: "", charm: "" };
       }
       applyMerch();
       renderShop();
@@ -1439,8 +1900,8 @@
     }
 
     function applyMerch() {
-      app.dataset.weapon = equippedMerch.weapon || "";
-      app.dataset.accessory = equippedMerch.accessory || "";
+      app.dataset.weapon = equippedMerch.outfit || equippedMerch.charm || "";
+      app.dataset.accessory = equippedMerch.glasses || equippedMerch.hat || "";
     }
 
     function awardCoins(amount) {
@@ -1454,33 +1915,34 @@
     function renderShop() {
       bankCoinsText.textContent = bankCoins;
       shopItems.innerHTML = "";
-      merchItems.forEach(item => {
+      shopTabs.querySelectorAll(".closet-tab").forEach(tab => {
+        tab.classList.toggle("selected", tab.dataset.category === selectedShopCategory);
+      });
+      merchItems.filter(item => item.category === selectedShopCategory).forEach(item => {
         const isOwned = ownedMerch.includes(item.id);
-        const isEquipped = equippedMerch[item.type] === item.id;
+        const isEquipped = equippedMerch[item.category] === item.id;
         const card = document.createElement("article");
-        card.className = `shop-item${isEquipped ? " equipped" : ""}`;
+        card.className = `closet-item${isEquipped ? " equipped" : ""}`;
         const icon = document.createElement("div");
-        icon.className = "shop-icon";
-        icon.textContent = item.icon;
-        const copy = document.createElement("div");
-        copy.className = "shop-copy";
-        copy.innerHTML = `<h3>${item.name}</h3><p>${item.text}</p>`;
+        icon.className = "closet-art";
+        icon.dataset.kind = item.kind;
+        icon.style.setProperty("--item-color", item.color);
         const action = document.createElement("button");
-        action.className = `shop-action${isOwned && !isEquipped ? " ready" : ""}`;
+        action.className = "closet-action";
         action.type = "button";
-        action.textContent = isEquipped ? "Equipped" : isOwned ? "Equip" : `${item.cost} coins`;
+        action.textContent = isEquipped ? "✓" : isOwned ? "Equip" : item.cost === 0 ? "Free" : `${item.cost} coins`;
         action.disabled = isEquipped || (!isOwned && bankCoins < item.cost);
         action.addEventListener("click", () => {
           if (!isOwned) {
             bankCoins -= item.cost;
             ownedMerch.push(item.id);
           }
-          equippedMerch[item.type] = item.id;
+          equippedMerch[item.category] = item.id;
           applyMerch();
           saveProgress();
           renderShop();
         });
-        card.append(icon, copy, action);
+        card.append(icon, action);
         shopItems.append(card);
       });
     }
@@ -1654,8 +2116,9 @@
         const elapsedSeconds = (now - lastEnemyAdvance) / 1000;
         lastEnemyAdvance = now;
         const level = levels[settings.level];
-        const accessory = equippedItem("accessory");
-        const creepBoost = accessory?.id === "goggles" ? .9 : 1;
+        const glasses = equippedItem("glasses");
+        const hat = equippedItem("hat");
+        const creepBoost = glasses?.id === "goggles" || hat?.id === "topper" ? .9 : 1;
         enemyDistance += (level.loseDistance / 60) * elapsedSeconds * creepBoost;
         updateEnemyPosition();
         if (enemyDistance >= level.loseDistance) {
@@ -1700,8 +2163,10 @@
       if (button) button.classList.add(isCorrect ? "correct" : "wrong");
 
       if (isCorrect) {
-        const weapon = equippedItem("weapon");
-        const coinBonus = weapon?.id === "rainbow" ? 2 : weapon?.id === "spark" ? 1 : 0;
+        const outfit = equippedItem("outfit");
+        const charm = equippedItem("charm");
+        const glasses = equippedItem("glasses");
+        const coinBonus = outfit?.id === "winter" ? 2 : outfit?.id === "scout" || charm?.id === "spark" || glasses?.id === "round" ? 1 : 0;
         awardCoins(1 + coinBonus);
         rescueProgress += 1;
         enemyHealth -= 1;
@@ -1710,8 +2175,9 @@
         shoot();
         updateHealth();
       } else {
-        const accessory = equippedItem("accessory");
-        const rushShield = accessory?.id === "cape" ? .8 : 1;
+        const charm = equippedItem("charm");
+        const hat = equippedItem("hat");
+        const rushShield = charm?.id === "cape" || hat?.id === "crown" ? .8 : 1;
         wrongStreak += 1;
         enemyDistance += Math.round((level.wrong + (wrongStreak - 1) * level.wrongBonus) * difficulty.wrong * rushShield);
         enemyAttack();
@@ -1821,8 +2287,16 @@
 
     landingStart.addEventListener("click", () => setScreen("level"));
     levelBack.addEventListener("click", () => setScreen("landing"));
+    openMerch.addEventListener("click", () => setScreen("merch"));
+    merchBack.addEventListener("click", () => setScreen("level"));
     levelNext.addEventListener("click", () => setScreen("setup"));
     settingsBack.addEventListener("click", () => setScreen("level"));
+    shopTabs.addEventListener("click", event => {
+      const button = event.target.closest(".closet-tab");
+      if (!button) return;
+      selectedShopCategory = button.dataset.category;
+      renderShop();
+    });
     startButton.addEventListener("click", startGame);
     pauseButton.addEventListener("click", () => {
       paused = true;
